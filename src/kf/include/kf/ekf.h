@@ -8,6 +8,8 @@
 #include <gps_common/GPSFix.h>
 #include <sensor_msgs/Imu.h>
 #include "kf/EkfMsg.h"
+#include <std_msgs/Header.h>
+#include <numeric>
 
 
 class EKF
@@ -29,9 +31,9 @@ class EKF
         void imuCallback(const sensor_msgs::Imu::ConstPtr&);
 
         void matricesInitializer();
-        void publishPosition();
+        void publishResults();
         void debugging();
-        Eigen::VectorXd calculateError(Eigen::VectorXd, Eigen::VectorXd);
+        Eigen::VectorXd calculateRMSE(std::vector<gps_common::GPSFix>, std::vector<sensor_msgs::Imu> , Eigen::MatrixXd);
         void predict();
         void update();
         void measurementGps(const gps_common::GPSFix::ConstPtr&);
@@ -42,6 +44,10 @@ class EKF
         ros::Subscriber gpsSub;
         ros::Subscriber imuSub;
         ros::Publisher ekfPub; 
+        ros::Publisher rmsePub;
+
+        // Common Header
+        std_msgs::Header m_gpsHeader;
 
         // Delta t
         double m_dt = 0.01;
@@ -59,11 +65,12 @@ class EKF
         bool debug;
 
         // Error vector
-        Eigen::VectorXd m_errorVector = Eigen::VectorXd::Zero(6);
+        Eigen::VectorXd m_RMSE = Eigen::VectorXd::Zero(6);
 
         // System State vectors - Xn,n
         Eigen::VectorXd m_currentSystemState =  Eigen::VectorXd::Zero(6);
         Eigen::VectorXd m_predictionSystemState =  Eigen::VectorXd::Zero(6);
+        Eigen::MatrixXd m_predictionSystemStateArray =  Eigen::MatrixXd::Zero(6,1000);
         Eigen::VectorXd m_estimationSystemState =  Eigen::VectorXd::Zero(6);
         
         // Covariance matrices - Pn,n
@@ -99,19 +106,10 @@ class EKF
         // Identity Matrix - I
         Eigen::MatrixXd m_I = Eigen::MatrixXd::Identity(6, 6);
 
+        std::vector<sensor_msgs::Imu> m_imuVec;
+        std::vector<gps_common::GPSFix> m_gpsVec;
 
-
-
-
-
-
-
-
-
-
-
- 
-
+        int m_temp = 0;
 
 
 };

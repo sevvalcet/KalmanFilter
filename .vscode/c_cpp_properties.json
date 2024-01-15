@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "/opt/ros/noetic/include/**",
+                "/home/sevo/Desktop/Learning_KF/kf_ws/src/kf/include/**",
+                "/home/sevo/Desktop/Learning_KF/kf_ws/src/kf/**",
+                "/home/sevo/Desktop/Learning_KF/kf_ws/**",
+                "/usr/include/**",
+                "${workspaceFolder}/devel/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}
