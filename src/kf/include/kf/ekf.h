@@ -50,7 +50,7 @@ class EKF
         std_msgs::Header m_gpsHeader;
 
         // Delta t
-        double m_dt = 0.01;
+        double m_dt=0.01;
 
         // Procces Noises
         // double m_gpsNoiseP = 0.5*8.8*pow(m_dt, 2); // X and Y
@@ -70,7 +70,7 @@ class EKF
         // System State vectors - Xn,n
         Eigen::VectorXd m_currentSystemState =  Eigen::VectorXd::Zero(6);
         Eigen::VectorXd m_predictionSystemState =  Eigen::VectorXd::Zero(6);
-        Eigen::MatrixXd m_predictionSystemStateArray =  Eigen::MatrixXd::Zero(6,1000);
+        Eigen::MatrixXd m_predictionSystemStateArray =  Eigen::MatrixXd::Zero(6,1005);
         Eigen::VectorXd m_estimationSystemState =  Eigen::VectorXd::Zero(6);
         
         // Covariance matrices - Pn,n

@@ -1,0 +1,12 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/sevo/KalmanFilter/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages",
+        "/usr/local/lib/python3.8/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/sevo/KalmanFilter/devel/lib/python3/dist-packages",
+        "/opt/ros/noetic/lib/python3/dist-packages",
+        "/usr/local/lib/python3.8/dist-packages"
+    ]
+}

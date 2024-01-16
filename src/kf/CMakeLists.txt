@@ -229,8 +229,9 @@ target_link_libraries(kfNode kfLib ${catkin_LIBRARIES})
 add_library(ekfLib src/ekf.cpp)
 target_compile_features(ekfLib INTERFACE cxx_std_11)
 
-add_executable(ekfNode src/ekf_node.cpp src/ekf.cpp) 
+add_executable(ekfNode src/ekf_node.cpp src/ekf.cpp ) 
 target_compile_features(ekfNode INTERFACE cxx_std_11)
 
 add_dependencies(ekfNode ${catkin_EXPORTED_TARGETS})
 target_link_libraries(ekfNode ekfLib ${catkin_LIBRARIES})
+

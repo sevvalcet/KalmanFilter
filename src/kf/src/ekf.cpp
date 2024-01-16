@@ -1,4 +1,4 @@
-#include "kf/ekf.h"
+#include "../include/kf/ekf.h"
 
 
 EKF::EKF(int argc, char **argv)
@@ -13,9 +13,8 @@ EKF::EKF(int argc, char **argv)
     // Publishers
     ekfPub = n->advertise<kf::EkfMsg>("/estimatedPosition", 10);
     rmsePub = n->advertise<kf::EkfMsg> ("/rmse",10);
-    debug = false;
 
-
+    debug=false;
     ros::spin();
 }
 
@@ -191,6 +190,10 @@ Eigen::VectorXd EKF::systemStatesEquation(Eigen::VectorXd  currentSystemState)
 
     m_temp+=1;
 
+    if (m_temp == 1001)
+    {
+        m_temp=0;
+    }
 
     return predictionSystemState;     
 }
@@ -248,7 +251,9 @@ Eigen::VectorXd EKF::calculateRMSE(std::vector<gps_common::GPSFix> gpsMeas, std:
     double sumSquaredDiffYawRate = 0.0;
     double sumSquaredDiffAcc = 0.0;
 
-    for (size_t i = 0; i < gpsMeas.size(); ++i) {
+    for (int i = 0; i < m_temp; ++i) 
+    {
+        
         double diffLong = gpsMeas[i].longitude - estimatedMeas(0,i);
         double diffLat = gpsMeas[i].latitude - estimatedMeas(1,i);
         double diffYaw = imuMeas[i].orientation.z - estimatedMeas(2,i);
@@ -261,24 +266,20 @@ Eigen::VectorXd EKF::calculateRMSE(std::vector<gps_common::GPSFix> gpsMeas, std:
         sumSquaredDiffVel += pow(diffVel,2);
         sumSquaredDiffYawRate += pow(diffYawRate,2);
         sumSquaredDiffAcc += pow(diffAcc,2);
+     
     }
-
-    double meanSquaredDiffLong = sumSquaredDiffLong / gpsMeas.size();
+    
+    double meanSquaredDiffLong = sumSquaredDiffLong / m_temp;
     double rmseLong = std::sqrt(meanSquaredDiffLong);
-
-    double meanSquaredDiffLat = sumSquaredDiffLat / gpsMeas.size();
+    double meanSquaredDiffLat = sumSquaredDiffLat / m_temp;
     double rmseLat = std::sqrt(meanSquaredDiffLat);
-
-    double meanSquaredDiffYaw = sumSquaredDiffYaw / gpsMeas.size();
+    double meanSquaredDiffYaw = sumSquaredDiffYaw / m_temp;
     double rmseYaw = std::sqrt(meanSquaredDiffYaw);
-
-    double meanSquaredDiffVel = sumSquaredDiffVel / gpsMeas.size();
+    double meanSquaredDiffVel = sumSquaredDiffVel / m_temp;
     double rmseVel = std::sqrt(meanSquaredDiffVel);
-
-    double meanSquaredDiffYawRate = sumSquaredDiffYawRate / gpsMeas.size();
+    double meanSquaredDiffYawRate = sumSquaredDiffYawRate / m_temp;
     double rmseYawRate = std::sqrt(meanSquaredDiffYawRate);
-
-    double meanSquaredDiffAcc = sumSquaredDiffAcc / gpsMeas.size();
+    double meanSquaredDiffAcc = sumSquaredDiffAcc / m_temp;
     double rmseAcc = std::sqrt(meanSquaredDiffAcc);
 
     RMSEs[0] = rmseLong;
@@ -288,7 +289,12 @@ Eigen::VectorXd EKF::calculateRMSE(std::vector<gps_common::GPSFix> gpsMeas, std:
     RMSEs[4] = rmseYawRate;
     RMSEs[5] = rmseAcc;
     
-    std::cout << "RMSEs: " << RMSEs << "\n";
+    if (m_temp==1000 && debug)
+    {    
+        std::cout << "RMSEs: " << RMSEs << "\n";
+        std::cout << "--------------------------------------------------------------\n";
+
+    }
 
     return RMSEs;
 }
@@ -299,7 +305,7 @@ void EKF::publishResults()
     kf::EkfMsg rmse;
     
     int temp = 0;
-
+    
     result.header = m_gpsHeader;
     result.longitude = m_currentSystemState[0];
     result.latitude = m_currentSystemState[1];
@@ -307,7 +313,7 @@ void EKF::publishResults()
     result.velocity = m_currentSystemState[3];
     result.yawRate = m_currentSystemState[4];
     result.longAcceleration = m_currentSystemState[5];
-    
+ 
     rmse.header = m_gpsHeader;
     rmse.longitude = m_RMSE(0,temp);
     rmse.latitude = m_RMSE(1,temp);
@@ -316,10 +322,17 @@ void EKF::publishResults()
     rmse.yawRate = m_RMSE(4,temp);
     rmse.longAcceleration = m_RMSE(5,temp);
 
+
     ekfPub.publish(result);
     rmsePub.publish(rmse);
 
     temp+=1;
+
+    if (temp==1001)
+    {
+        temp=0;
+    }
+
 
 }
 
@@ -339,10 +352,9 @@ void EKF::debugging()
         std::cout << "--------------------------------------------------------------\n";
         std::cout << "Kalman Gain of States: \n" << m_KGain << "\n";
         std::cout << "--------------------------------------------------------------\n";
-        // std::cout << "Process Noise Matrix: \n" << m_QMatrix << "\n";
-        // std::cout << "--------------------------------------------------------------\n";
-        std::cout << "m_RMSE: \n" << m_RMSE << "\n";
+        std::cout << "Process Noise Matrix: \n" << m_QMatrix << "\n";
         std::cout << "--------------------------------------------------------------\n";
+        
     }
 
 }
