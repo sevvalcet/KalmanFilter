@@ -1,0 +1,7 @@
+<launch>
+
+    <node pkg="kf" type="kfNode" name="kalman_filter_node" output="screen">
+        <rosparam command="load" file="$(find kf)/config/params.yaml"/>
+    </node>
+
+</launch>

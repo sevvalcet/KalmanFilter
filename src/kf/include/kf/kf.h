@@ -43,7 +43,7 @@ class KF
 
 
         // Delta t
-        double m_dt = 0.01;
+        double m_dt;
 
         // Variance of acceleration
         double m_accVariance = 0.04;
@@ -52,7 +52,7 @@ class KF
         bool debug;
 
         // Data limit for RMSE calculation
-        int m_temp = 0;
+        int m_temp;
 
 
         // Error vector

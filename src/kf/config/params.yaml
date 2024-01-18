@@ -1,4 +1,6 @@
 debug: false # Debugging check
 m_dt: 0.01   # Delta t(time)
 m_temp: 0    # Data limit for RMSE calculation
+m_accVariance: 0.04  # Variance of acceleration for KF algorithm
+
 

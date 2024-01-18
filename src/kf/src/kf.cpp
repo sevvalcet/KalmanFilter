@@ -16,9 +16,6 @@ KF::KF(int argc, char **argv)
     gpsPub = n->advertise<gps_common::GPSFix>("/estimatedPosition", 10);
     rmsePub = n->advertise<gps_common::GPSFix>("/RMSE", 10);
 
-
-    debug = true;
-
     ros::spin();
 
 }
