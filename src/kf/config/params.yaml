@@ -1,3 +1,4 @@
-debug: false
-m_dt: 0.01
-m_temp: 0
+debug: false # Debugging check
+m_dt: 0.01   # Delta t(time)
+m_temp: 0    # Data limit for RMSE calculation
+

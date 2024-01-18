@@ -1,5 +1,11 @@
 #include "../include/kf/ekf.h"
 
+ /**
+  * The ros::init() function must be called before using any part of the  ROS .
+  * 
+  * @param argc It can perform any ROS arguments and name remapping that were provided 
+  * @param argv It can perform any ROS arguments and name remapping that were provided 
+  */
 
 EKF::EKF(int argc, char **argv)
 {
@@ -17,7 +23,11 @@ EKF::EKF(int argc, char **argv)
     ros::spin();
 }
 
-
+ /**
+  * This function is a callback which calling the functions. 
+  * 
+  * @param msg A message name of gps_common::GPSFix type.
+  */
 void EKF::gpsCallback(const gps_common::GPSFix::ConstPtr& msg)
 {
     // Calling Functions
@@ -32,6 +42,11 @@ void EKF::gpsCallback(const gps_common::GPSFix::ConstPtr& msg)
 
 }
 
+ /**
+  * This function is a callback which calling the functions. 
+  * 
+  * @param msg A message name of sensor_msgs::Imu type.
+  */
 void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
 {
     measurementImu(msg);
@@ -39,12 +54,6 @@ void EKF::imuCallback(const sensor_msgs::Imu::ConstPtr& msg)
 
   /**
    *This function assigns values to the defined matrices(m_FMatrix, m_QMatrix, m_HMatrix, m_currentPMatrix and m_RMatrix).
-   *
-   * @param m_FMatrix Jacobian of the Dynamic Matrix with respect to the state vector
-   * @param m_QMatrix The process noise matrix
-   * @param m_HMatrix The observation matrix
-   * @param m_currentPMatrix The Covariance matrix of the current state
-   * @param m_RMatrix The measurement covariance matrix
    */
 void EKF::matricesInitializer()
 {
@@ -123,10 +132,7 @@ void EKF::matricesInitializer()
    *This function assigns values from msg of type gps_common::GPSFix to m_gpsMeasurement.  
    *Also to assign longitude, latitude and speed values to the m_gpsVec vector to be used in RMSE calculation.
    *
-   * @param m_gpsHeader Common Header
-   * @param m_gpsMeasurement Measurement of GPS
-   * @param gpsData The data consists of longitude, latitude, and speed values represented as a vector.
-   * @param m_gpsVec Vector to which the data in gpsData is assigned to be used in RMSE
+   * @param msg A message name of gps_common::GPSFix type.
    */
 void EKF::measurementGps(const gps_common::GPSFix::ConstPtr& msg)
 {
@@ -153,10 +159,7 @@ void EKF::measurementGps(const gps_common::GPSFix::ConstPtr& msg)
    *This function assigns values from msg of type sensor_msgs::Imu to m_imuMeasurement.  
    *Also to assign longitude, latitude and speed values to the m_gpsVec vector to be used in RMSE calculation.
    *
-   * @param quat Vector used to convert Quaternion data from Imu to Yaw 
-   * @param m_imuMeasurement Measurement of IMU
-   * @param imudata The data consists of yaw, yaw rate, and acceleration values represented as a vector.
-   * @param m_imuVec Vector to which the data in imuData is assigned to be used in RMSE
+   * @param msg A message name of sensor_msgs::Imu type.
    */
 void EKF::measurementImu(const sensor_msgs::Imu::ConstPtr& msg)
 {
@@ -182,9 +185,6 @@ void EKF::measurementImu(const sensor_msgs::Imu::ConstPtr& msg)
 
 /**
    *This function calls the functions that predict the system state and covariance matrix.
-   *
-   * @param m_predictionSystemState Prediction of System state
-   * @param m_predictPMatrix Prediction of covariance matrix
    */
 void EKF::predict()
 {
@@ -196,10 +196,6 @@ void EKF::predict()
 
 /**
    *This function calls the functions that update the system state and covariance matrix.
-   *
-   * @param m_KGain Kalman Gain
-   * @param m_currentSystemState Update of Current System state
-   * @param m_currentPMatrix Update of current covariance matrix
    */
 void EKF::update()
 {
@@ -212,8 +208,6 @@ void EKF::update()
 
 /**
    *This function assigns the data received from GPS and IMU to a matrix.
-   *
-   * @param m_ZMatrix Matrix of data received from GPS and IMU
    */
 void EKF::measurement()
 {
@@ -229,9 +223,7 @@ void EKF::measurement()
 /**
  * This function predicts the system state and creates an array of this data for RMSE calculation.
  *
- * @param predictionSystemState Prediction of System state.
- * @param m_predictionSystemStateArray Prediction of System state for RMSE calculation
- * @param m_temp Limit of data for RMSE calculation
+ * @param currentSystemState Current System state.
  *
  * @return Prediction of System state.
  */
@@ -264,10 +256,9 @@ Eigen::VectorXd EKF::systemStatesEquation(Eigen::VectorXd  currentSystemState)
 /**
  * This function predicts the covariance matrix of the system state.
  *
- * @param predictPMatrix Prediction of Covariance matrix.
- * @param currentCovarianceMatrix Current Covariance matrix.
+ * @param currentCovarianceMatrix Current Covariance matrix
  *
- * @return Prediction of Covariance matrix.
+ * @return Prediction of Covariance matrix
  */
 Eigen::MatrixXd EKF::covarianceExtrapolationEquation(Eigen::MatrixXd currentCovarianceMatrix)
 {
@@ -283,7 +274,7 @@ Eigen::MatrixXd EKF::covarianceExtrapolationEquation(Eigen::MatrixXd currentCova
 /**
  * This function calculates the Kalman Gain.
  *
- * @param KGain Kalman Gain.
+ * @param predictPMatrix Prediction of Covariance matrix
  *
  * @return Kalman Gain
  */
@@ -339,7 +330,9 @@ Eigen::MatrixXd  EKF::updateCurrentEstimateUncertainty(Eigen::MatrixXd estimatio
 /**
  * This function calculates  RMSE.
  *
- * @param RMSEs Vector of RMSE results.
+ * @param gpsMeas Vector of GPS measurements
+ * @param imuMeas Vector of IMU measurements
+ * @param estimatedMeas Vector of estimated measurements
  *
  * @return  RMSE
  */
@@ -406,13 +399,8 @@ Eigen::VectorXd EKF::calculateRMSE(std::vector<gps_common::GPSFix> gpsMeas, std:
 }
 
 /**
- * This function calculates  RMSE.
+ * This function publishes results and RMSE.
  *
- * @param result Outputs estimated from GPS and IMU.
- * @param rmse RMSE values
- * @param temp Limit of data for RMSE calculation.
- * @param ekfPub Publisher for outputs estimated from GPS and IMU.
- * @param rmsePub Publisher for RMSE results.
  */
 void EKF::publishResults()
 {
@@ -456,8 +444,6 @@ void EKF::publishResults()
 
 /**
  * This function was created to debug calculated values and display them on the terminal.  
- *
- * @param debug If it is True, values are printed in the terminal.
  */
 void EKF::debugging()
 {
