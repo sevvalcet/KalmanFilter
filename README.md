@@ -19,10 +19,13 @@ The algorithm is built as a ROS package as a framework in C++ following OOP para
 
 `rosdep install --from-paths src --ignore-src -r -y` 
 
+## Running Kalman Filter  ##
+
+`roslaunch kf kf.launch` 
+
 ## Running Extended Kalman Filter  ##
 
 `roslaunch kf ekf.launch` 
-
 
 ## Running PlotJuggler ##
 
