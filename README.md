@@ -1,4 +1,4 @@
-# KalmanFilter
+# Extended Kalman Filter
 
 **The aim of This Project**
 
