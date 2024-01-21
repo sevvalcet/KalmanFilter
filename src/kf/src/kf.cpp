@@ -14,7 +14,7 @@ KF::KF(int argc, char **argv)
 
     ros::Subscriber gpsSub = n->subscribe("/gps/gps", 10, &KF::gpsCallback,this);
     gpsPub = n->advertise<gps_common::GPSFix>("/estimatedPosition", 10);
-    rmsePub = n->advertise<gps_common::GPSFix>("/RMSE", 10);
+    rmsePub = n->advertise<kf::KfMsg>("/RMSE", 10);
 
     ros::spin();
 
@@ -268,7 +268,7 @@ void KF::publishResults()
     int temp = 0;
 
     gps_common::GPSFix processed_msg;
-    gps_common::GPSFix rmse;
+    kf::KfMsg rmse;
 
     processed_msg.header = m_gpsHeader;
     processed_msg.latitude = m_currentSystemState[0];

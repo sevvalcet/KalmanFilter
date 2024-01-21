@@ -6,6 +6,7 @@
 #include <vector>
 #include <Eigen/Dense>
 #include <gps_common/GPSFix.h>
+#include "kf/KfMsg.h"
 
 class KF
 {
